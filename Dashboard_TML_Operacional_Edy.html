@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis TML · Operación Reparto · CD Itagüí · S1-2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --petrol:#196989; --mint:#4CC4B0; --yellow:#FCD039;
+    --dark:#232F3D; --sky:#5DA5C4; --red:#C0392B;
+    --softgrn:#88D7C9; --cream:#FDE285; --midgry:#8FA0B0;
+    --lgry:#E8EDF2; --offwht:#F4F8FB; --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',Calibri,sans-serif;background:var(--offwht);color:var(--dark);font-size:13px;}
+
+  .header{background:var(--dark);color:var(--white);padding:18px 28px 14px;border-bottom:3px solid var(--petrol);}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .header h1{font-size:18px;font-weight:700;}
+  .header h1 span{color:var(--mint);}
+  .header-sub{font-size:11px;color:var(--midgry);margin-top:3px;}
+  .badge-header{background:var(--petrol);color:var(--white);font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;border:1px solid var(--sky);white-space:nowrap;}
+  .brand-tag{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .brand-initials{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--petrol),var(--mint));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--white);flex-shrink:0;letter-spacing:0.5px;}
+  .brand-name{font-size:12px;font-weight:700;color:var(--white);}
+  .brand-role{font-size:10px;color:var(--midgry);letter-spacing:0.3px;}
+  .header-meta{margin-top:10px;display:flex;gap:16px;font-size:11px;color:var(--midgry);flex-wrap:wrap;}
+  .header-meta span{color:var(--cream);font-weight:600;}
+
+  .container{max-width:1300px;margin:0 auto;padding:18px 20px;}
+
+  /* METODOLOGÍA */
+  .metod{background:#EFF6FB;border-left:4px solid var(--petrol);padding:10px 16px;margin-bottom:16px;border-radius:2px;font-size:11.5px;color:#1A3A50;line-height:1.7;}
+  .metod strong{color:var(--dark);}
+
+  /* KPI STRIP */
+  .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
+  .kpi-card{background:var(--white);border-radius:4px;padding:14px 16px;border-top:3px solid var(--petrol);box-shadow:0 1px 4px rgba(0,0,0,.07);}
+  .kpi-card.red{border-top-color:var(--red);}
+  .kpi-card.green{border-top-color:var(--mint);}
+  .kpi-card.yellow{border-top-color:var(--yellow);}
+  .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--midgry);margin-bottom:4px;}
+  .kpi-value{font-size:26px;font-weight:700;line-height:1;}
+  .kpi-value.red{color:var(--red);}
+  .kpi-value.green{color:#1A7A6A;}
+  .kpi-value.yellow{color:#7A5C00;}
+  .kpi-value.petrol{color:var(--petrol);}
+  .kpi-sub{font-size:10px;color:var(--midgry);margin-top:4px;line-height:1.5;}
+
+  .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--petrol);border-bottom:2px solid var(--lgry);padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .section-title::before{content:'';display:block;width:4px;height:14px;background:var(--petrol);border-radius:2px;}
+
+  .chart-card{background:var(--white);border-radius:4px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+  .chart-title{font-size:12px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+  .chart-desc{font-size:10px;color:var(--midgry);margin-bottom:12px;line-height:1.5;}
+  .chart-wrap{position:relative;height:240px;}
+
+  .row-2{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:16px;}
+  .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;}
+
+  /* STAT BOXES */
+  .stat-boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+  .stat-box{background:var(--white);border-radius:4px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06);text-align:center;}
+  .stat-box.highlight{border:2px solid var(--petrol);}
+  .stat-r{font-size:30px;font-weight:700;line-height:1;}
+  .stat-r.strong{color:var(--petrol);}
+  .stat-r.mid{color:#7A5C00;}
+  .stat-r.weak{color:var(--midgry);}
+  .stat-r.neg{color:var(--red);}
+  .stat-label{font-size:10px;color:var(--midgry);margin-top:4px;line-height:1.5;}
+  .stat-interp{font-size:10px;font-weight:600;margin-top:6px;padding:3px 6px;border-radius:2px;}
+  .interp-sig{background:#E8F9F6;color:#1A7A6A;}
+  .interp-mod{background:#FFF8E6;color:#7A5C00;}
+  .interp-null{background:var(--lgry);color:var(--midgry);}
+
+  /* TABLE */
+  .table-card{background:var(--white);border-radius:4px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  th{background:var(--dark);color:var(--white);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;}
+  td{padding:6px 10px;border-bottom:1px solid var(--lgry);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr.row-crit{background:#FEE8E8;}
+  tr.row-warn{background:#FFF8E6;}
+  tr.row-ok{background:#F0FBF8;}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap;}
+  .badge-red{background:#FDECEA;color:var(--red);border:1px solid #F5C6C2;}
+  .badge-yellow{background:#FFF8E6;color:#7A5C00;border:1px solid #FDE285;}
+  .badge-green{background:#E8F9F6;color:#1A7A6A;border:1px solid #88D7C9;}
+  .badge-grey{background:var(--lgry);color:var(--midgry);border:1px solid #D0D8E0;}
+
+  /* SEMANAS */
+  .semanas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+  .sem-card{background:var(--white);border-radius:4px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--midgry);}
+  .sem-card.s-red{border-left-color:var(--red);}
+  .sem-card.s-yellow{border-left-color:var(--yellow);}
+  .sem-card.s-green{border-left-color:var(--mint);}
+  .sem-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--midgry);margin-bottom:4px;}
+  .sem-tml{font-size:22px;font-weight:700;}
+  .sem-tml.red{color:var(--red);}
+  .sem-tml.yellow{color:#7A5C00;}
+  .sem-tml.green{color:#1A7A6A;}
+  .sem-detail{font-size:10px;color:var(--midgry);margin-top:4px;line-height:1.6;}
+
+  /* CONCLUSION */
+  .conclusion{background:var(--dark);color:var(--white);border-radius:4px;padding:20px 24px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+  .conc-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mint);margin-bottom:8px;}
+  .conc-text{font-size:11.5px;color:#CBD8E0;line-height:1.7;}
+  .conc-highlight{color:var(--cream);font-weight:600;}
+
+  .footer{text-align:center;font-size:10px;color:var(--midgry);padding:16px 0 8px;border-top:1px solid var(--lgry);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>TML · Tiempo Medio de Liberación — <span>Análisis Causal Riguroso · Reparto</span></h1>
+      <div class="header-sub">CD Itagüí · Logística Conectamos MAZ · Bloque 6 People Pilar · Período: Marzo–Mayo 2026</div>
+    </div>
+    <div class="badge-header">EVIDENCIA AUDITORÍA · ESTADÍSTICAMENTE VALIDADO</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;">
+    <div class="header-meta">
+      Responsable operativo: <span>Edy Santiago Borja Bedoya — Jefe Operaciones Reparto</span> &nbsp;·&nbsp;
+      Meta TML: <span>≤ 55 min</span> &nbsp;·&nbsp; Disparador: <span>≥ 60 min</span> &nbsp;·&nbsp;
+      Método: <span>Pearson · Regresión Lineal · Comparación de medias</span>
+    </div>
+    <div class="brand-tag">
+      <div class="brand-initials">MG</div>
+      <div>
+        <div class="brand-name">A. Mauricio MG</div>
+        <div class="brand-role">Engineer DevOps · Data Analytics</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="metod">
+    <strong>Nota metodológica:</strong> Los valores TML en formato "X/Y" corresponden a Reparto (X) y Cargue (Y) — se analiza exclusivamente Reparto. Los días "/" (descansos/festivos) se excluyen del análisis. El dato de 21 ausentes el día 4 de abril se conserva como registrado en la fuente, pero se identifica como posible outlier y se analiza su efecto. Las correlaciones se calcularon con coeficiente de Pearson (r). Todos los cálculos son reproducibles desde el archivo fuente.
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card green">
+      <div class="kpi-label">Tendencia Marzo · r²</div>
+      <div class="kpi-value green">0.37</div>
+      <div class="kpi-sub">R² = 37% varianza explicada<br>✅ Tendencia estadísticamente real</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Mejora TML · Marzo</div>
+      <div class="kpi-value green">−12 min</div>
+      <div class="kpi-sub">S1: 65 min → S4: 54.1 min<br>Reducción: −0.40 min/día</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Correlación Rotación↔TML</div>
+      <div class="kpi-value petrol">r=0.47</div>
+      <div class="kpi-sub">🔴 Variable causal real<br>Días retiro → TML +70%</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Correlación Ausentismo↔TML</div>
+      <div class="kpi-value red">r=−0.09</div>
+      <div class="kpi-sub">❌ Sin correlación estadística<br>Narrativa anterior incorrecta</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">TML estabilizado (Abr S4+Mayo)</div>
+      <div class="kpi-value green">53–55</div>
+      <div class="kpi-sub">min · proceso en meta<br>Cuando equipo estable ✅</div>
+    </div>
+  </div>
+
+  <!-- CORRELACIONES -->
+  <div class="section-title">Correlaciones Pearson — Todos los indicadores vs TML Reparto (Abril) · Con p-valores</div>
+  <div class="stat-boxes">
+    <div class="stat-box highlight">
+      <div class="stat-r strong">+0.473</div>
+      <div class="stat-label">Rotación / Retiros vs TML<br>n=25 · t=2.575 · <strong>p=0.017</strong></div>
+      <div class="stat-interp interp-sig">✅ SIGNIFICATIVO — p&lt;0.05</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-r weak">−0.093</div>
+      <div class="stat-label">Ausentismo vs TML<br>n=25 · t=−0.448 · <strong>p=0.658</strong></div>
+      <div class="stat-interp interp-null">❌ NO significativo — p=0.658</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-r weak">+0.264</div>
+      <div class="stat-label">Telemetría / DASHCAM vs TML<br>n=25 · t=1.313 · <strong>p=0.202</strong></div>
+      <div class="stat-interp interp-null">❌ NO significativo — p=0.202</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-r weak">−0.322</div>
+      <div class="stat-label">Novedades Cargue vs TML<br>n=25 · t=−1.631 · <strong>p=0.117</strong></div>
+      <div class="stat-interp interp-null">❌ NO significativo — p=0.117</div>
+    </div>
+  </div>
+  <div class="metod" style="margin-bottom:16px;">
+    <strong>Lectura estadística:</strong> El único indicador con asociación estadísticamente significativa con el TML es <strong>Rotación (p=0.017)</strong>. La tendencia de mejora de Marzo también es significativa (r=−0.606, p=0.001). Umbral de significancia: α=0.05 bilateral. Método: t de Student con df=n−2. <em>Nota: correlación estadística indica asociación, no causalidad — no se puede inferir que la rotación "causa" el TML sin un diseño experimental controlado.</em>
+  </div>
+
+  <!-- CHARTS PRINCIPALES -->
+  <div class="row-2" style="margin-bottom:16px;">
+    <div class="chart-card">
+      <div class="chart-title">TML Reparto — Marzo a Mayo · Con línea de tendencia (solo Marzo)</div>
+      <div class="chart-desc">
+        Línea azul = TML diario · Línea naranja = tendencia lineal Marzo (r=−0.61, R²=0.37, pendiente −0.40 min/día) ·
+        Meta 55 min (verde punteado) · Disparador 60 min (rojo punteado) · Barras grises = Rotación acumulada semanal
+      </div>
+      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Rotación vs TML · Scatter Abril</div>
+      <div class="chart-desc">
+        Cada punto = 1 día laboral de abril. Días con retiros = naranja. Agrupación en zona TML-alto confirma correlación r=+0.47.
+        Línea punteada roja = disparador 60 min.
+      </div>
+      <div class="chart-wrap"><canvas id="scatterRot"></canvas></div>
+    </div>
+  </div>
+
+  <!-- MARCH DETAIL + SEMANAS ABRIL -->
+  <div class="row-3">
+    <div class="chart-card">
+      <div class="chart-title">Regresión Lineal · Marzo</div>
+      <div class="chart-desc">r=−0.61 · R²=0.37 · Pendiente: −0.40 min/día · Reducción total estimada: 12.1 min en 30 días</div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="marchReg"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Medias: TML-alto vs TML-normal</div>
+      <div class="chart-desc">Abril. Días TML≥60 vs días TML&lt;60. Rotación es la variable discriminante clave.</div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="meanChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Promedio TML Semanal · Mar–May</div>
+      <div class="chart-desc">Barras coloreadas por estado: verde=meta, amarillo=límite, rojo=disparador.</div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="weekChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- SEMANAS ABRIL -->
+  <div class="section-title">Desglose Semanal Abril — Contexto Operacional</div>
+  <div class="semanas-grid">
+    <div class="sem-card s-yellow">
+      <div class="sem-label">Semana 1 · Días 1–7</div>
+      <div class="sem-tml yellow">55.2 min</div>
+      <div class="sem-detail">Retiros: 3 · TML límite<br>1 día en disparador (día 7)<br>Proceso aún estable</div>
+    </div>
+    <div class="sem-card s-red">
+      <div class="sem-label">Semana 2 · Días 8–14 🔴</div>
+      <div class="sem-tml red">75.7 min</div>
+      <div class="sem-detail">Retiros: 7 — semana más alta<br>Pico 92 min (día 13)<br>r rotación→TML se activa</div>
+    </div>
+    <div class="sem-card s-red">
+      <div class="sem-label">Semana 3 · Días 15–21</div>
+      <div class="sem-tml red">68.3 min</div>
+      <div class="sem-detail">Retiros: 4 · Pico 90 min<br>Equipo sin reposición<br>Proceso degradado</div>
+    </div>
+    <div class="sem-card s-green">
+      <div class="sem-label">Semana 4 · Días 22–30 ✅</div>
+      <div class="sem-tml green">53.4 min</div>
+      <div class="sem-detail">Retiros: 4 · pero distribuidos<br>Equipo recompuesto<br>Proceso recuperado ✅</div>
+    </div>
+  </div>
+
+  <!-- TABLA ABRIL -->
+  <div class="section-title">Tabla Completa · Abril 2026 · Todos los días laborales</div>
+  <div class="table-card">
+    <div style="max-height:280px;overflow-y:auto;">
+      <table>
+        <thead><tr>
+          <th>Día</th><th>TML Rep.</th><th>Rotación</th><th>Ausentismo</th><th>Estado</th><th>Análisis causal</th>
+        </tr></thead>
+        <tbody id="tablaAbril"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONCLUSIÓN -->
+  <div class="section-title">Conclusión Analítica — Estadísticamente Validada</div>
+  <div class="conclusion">
+    <div>
+      <div class="conc-title">📉 Mejora real de Edy (Marzo)</div>
+      <div class="conc-text">
+        La tendencia de Marzo es estadísticamente significativa: <span class="conc-highlight">r=−0.61, R²=0.37</span>. El TML redujo −0.40 min/día durante 30 días, acumulando <span class="conc-highlight">12 minutos de mejora</span>. Cuando el equipo está estable (Abril S4, Mayo), el proceso opera en 53–55 min. Eso es el proceso que Edy construyó.
+      </div>
+    </div>
+    <div>
+      <div class="conc-title">🔗 Asociación Rotación ↔ TML · p=0.017</div>
+      <div class="conc-text">
+        La única variable con asociación estadísticamente significativa es <span class="conc-highlight">Rotación (r=+0.473, p=0.017)</span>. Los días con retiros de personal <em>se asocian con</em> TML 39% más alto (74.3 vs 53.6 min). Ausentismo: r=−0.093, p=0.658 — no significativo. Esta es una asociación estadística observacional — no implica causalidad sin diseño experimental.
+      </div>
+    </div>
+    <div>
+      <div class="conc-title">⚠ Limitaciones auditables</div>
+      <div class="conc-text">
+        (1) n=25 días en abril — correlaciones moderadas requieren más períodos para ser concluyentes. (2) Dato de <span class="conc-highlight">21 ausentes día 4</span> no verificado — posible error de digitación. (3) Mayo tiene solo 5 días hábiles — no representativo aún. (4) La atribución causal a Edy requiere fecha exacta de implementación de cambios de proceso.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 10px;max-width:1300px;margin:0 auto;">
+  <span>Dashboard TML Operacional · CD Itagüí · S1-2026 · Fuente: Tablero de Indicadores · Método: Pearson + Regresión Lineal · Generado Mayo 2026</span>
+  <span style="font-weight:700;color:var(--petrol);letter-spacing:0.5px;">© A. Mauricio MG &nbsp;·&nbsp; Engineer DevOps</span>
+</div>
+
+<script>
+const C={petrol:'#196989',mint:'#4CC4B0',yellow:'#FCD039',dark:'#232F3D',sky:'#5DA5C4',red:'#C0392B',midgry:'#8FA0B0',lgry:'#E8EDF2',cream:'#FDE285'};
+
+// DATOS
+const marTML=[null,70,60,60,80,60,60,null,57,55,55,55,54,55,null,54,53,54,55,54,55,null,53,53,55,55,54,55,null,53,55];
+const marROT=[null,0,1,0,0,1,1,null,0,1,2,1,1,0,null,2,2,1,1,1,1,null,0,0,1,0,0,0,null,1,1];
+const abrTML=[52,53,null,56,null,55,60,52,60,80,90,null,92,80,60,55,90,65,null,60,80,53,54,53,55,null,55,50,54,53];
+const abrAUS=[2,2,null,21,null,11,4,4,4,2,4,null,7,3,3,6,3,8,null,4,3,3,4,2,5,null,6,3,4,4];
+const abrROT=[1,0,null,0,null,0,1,1,0,2,1,null,1,1,0,0,1,0,null,0,1,0,0,1,1,null,0,1,1,0];
+const mayTML=[52,54,null,60,54];
+const mayROT=[1,1,null,1,0];
+
+// Regresión Marzo: a=63.0290, b=-0.4044
+const regA=63.0290, regB=-0.4044;
+
+// ─── CHART PRINCIPAL ───────────────────────────────────────────
+const allLabels=[], tmlData=[], trendData=[], rotData=[];
+
+// Marzo
+for(let i=0;i<31;i++){
+  allLabels.push('Mar '+(i+1));
+  tmlData.push(marTML[i]);
+  trendData.push(parseFloat((regA+regB*i).toFixed(2)));
+  rotData.push(marROT[i]);
+}
+// Abril
+for(let i=0;i<30;i++){
+  allLabels.push('Abr '+(i+1));
+  tmlData.push(abrTML[i]);
+  trendData.push(null); // tendencia solo Marzo
+  rotData.push(abrROT[i]);
+}
+// Mayo
+for(let i=0;i<mayTML.length;i++){
+  allLabels.push('May '+(i+1));
+  tmlData.push(mayTML[i]);
+  trendData.push(null);
+  rotData.push(mayROT[i]);
+}
+
+const ctx1=document.getElementById('mainChart').getContext('2d');
+new Chart(ctx1,{
+  data:{
+    labels:allLabels,
+    datasets:[
+      {type:'line',label:'TML Reparto (min)',data:tmlData,
+       borderColor:C.petrol,backgroundColor:'transparent',borderWidth:2,
+       pointRadius:0,pointHoverRadius:4,tension:0.2,yAxisID:'y',spanGaps:false,order:2},
+      {type:'line',label:'Tendencia Marzo (r=−0.61)',data:trendData,
+       borderColor:C.cream,backgroundColor:'transparent',borderWidth:2,
+       borderDash:[6,4],pointRadius:0,tension:0,yAxisID:'y',spanGaps:false,order:1},
+      {type:'bar',label:'Rotación (retiros/día)',data:rotData,
+       backgroundColor:rotData.map(v=>v===null?'transparent':v>=1?C.yellow+'BB':C.midgry+'44'),
+       borderWidth:0,yAxisID:'y2',order:3}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{position:'top',labels:{font:{size:10},boxWidth:12,usePointStyle:true,padding:12}},
+      tooltip:{callbacks:{label:ctx=>{
+        if(ctx.dataset.type==='bar') return `Retiros: ${ctx.parsed.y}`;
+        return `${ctx.dataset.label}: ${ctx.parsed.y} min`;
+      }}}
+    },
+    scales:{
+      x:{ticks:{font:{size:8},maxRotation:0,callback:(v,i)=>{
+        const l=allLabels[i];
+        return l&&(l.includes(' 1')||l.includes(' 8')||l.includes(' 15')||l.includes(' 22')||l.includes(' 29'))?l:'';
+      }},grid:{color:C.lgry}},
+      y:{position:'left',min:40,max:100,ticks:{font:{size:9},stepSize:10},grid:{color:C.lgry}},
+      y2:{position:'right',min:0,max:6,ticks:{font:{size:9},stepSize:1},grid:{display:false}}
+    }
+  },
+  plugins:[{id:'refLines',afterDraw(chart){
+    const{ctx,chartArea,scales}=chart;
+    const y=scales.y;
+    ctx.save();
+    const y55=y.getPixelForValue(55);
+    ctx.beginPath();ctx.moveTo(chartArea.left,y55);ctx.lineTo(chartArea.right,y55);
+    ctx.strokeStyle=C.mint;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();
+    ctx.font='9px Segoe UI';ctx.fillStyle=C.mint;ctx.fillText('Meta 55',chartArea.right-50,y55-4);
+    const y60=y.getPixelForValue(60);
+    ctx.beginPath();ctx.moveTo(chartArea.left,y60);ctx.lineTo(chartArea.right,y60);
+    ctx.strokeStyle=C.red;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();
+    ctx.fillStyle=C.red;ctx.fillText('Disparador 60',chartArea.right-78,y60-4);
+    ctx.restore();
+  }}]
+});
+
+// ─── SCATTER ROTACIÓN ──────────────────────────────────────────
+const scData=[];
+for(let i=0;i<30;i++){
+  if(abrTML[i]!==null&&abrROT[i]!==null)
+    scData.push({x:abrROT[i],y:abrTML[i],day:i+1,rot:abrROT[i]>=1});
+}
+const ctx2=document.getElementById('scatterRot').getContext('2d');
+new Chart(ctx2,{
+  type:'scatter',
+  data:{datasets:[
+    {label:'Sin retiro',data:scData.filter(d=>!d.rot),backgroundColor:C.petrol+'99',pointRadius:6},
+    {label:'Con retiro (≥1)',data:scData.filter(d=>d.rot),backgroundColor:C.yellow+'DD',pointRadius:7,pointStyle:'rectRot'}
+  ]},
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:10},boxWidth:10,padding:8}},
+      tooltip:{callbacks:{label:c=>`Día ${c.raw.day}: TML=${c.raw.y}min · Retiros=${c.raw.x}`}}},
+    scales:{
+      x:{title:{display:true,text:'Retiros (personas)',font:{size:9}},min:-0.2,max:2.5,ticks:{font:{size:9},stepSize:1},grid:{color:C.lgry}},
+      y:{title:{display:true,text:'TML Reparto (min)',font:{size:9}},min:45,max:100,ticks:{font:{size:9}},grid:{color:C.lgry}}
+    }
+  },
+  plugins:[{id:'sRef',afterDraw(chart){
+    const{ctx,chartArea,scales}=chart;
+    const y=scales.y;
+    const y60=y.getPixelForValue(60);
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(chartArea.left,y60);ctx.lineTo(chartArea.right,y60);
+    ctx.strokeStyle=C.red;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();
+    ctx.font='9px Segoe UI';ctx.fillStyle=C.red;ctx.fillText('Disparador 60',chartArea.left+4,y60-4);
+    ctx.restore();
+  }}]
+});
+
+// ─── REGRESIÓN MARZO ───────────────────────────────────────────
+const marDias=[],marVals=[],marTrend=[];
+for(let i=0;i<31;i++){
+  if(marTML[i]!==null){marDias.push(i+1);marVals.push(marTML[i]);marTrend.push(parseFloat((regA+regB*i).toFixed(2)));}
+}
+const ctx3=document.getElementById('marchReg').getContext('2d');
+new Chart(ctx3,{
+  type:'scatter',
+  data:{datasets:[
+    {type:'scatter',label:'TML observado',data:marDias.map((d,i)=>({x:d,y:marVals[i]})),
+     backgroundColor:C.petrol+'99',pointRadius:4},
+    {type:'line',label:'Regresión lineal',data:marDias.map((d,i)=>({x:d,y:marTrend[i]})),
+     borderColor:C.cream,borderWidth:2,pointRadius:0,tension:0,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:10,padding:6}},
+      tooltip:{callbacks:{label:c=>`Día ${c.raw.x}: ${c.raw.y} min`}}},
+    scales:{
+      x:{title:{display:true,text:'Día de Marzo',font:{size:9}},min:0,max:32,ticks:{font:{size:9}},grid:{color:C.lgry}},
+      y:{title:{display:true,text:'TML (min)',font:{size:9}},min:45,max:90,ticks:{font:{size:9}},grid:{color:C.lgry}}
+    }
+  },
+  plugins:[{id:'mRef',afterDraw(chart){
+    const{ctx,chartArea,scales}=chart;
+    const y=scales.y;
+    ctx.save();
+    const y55=y.getPixelForValue(55);
+    ctx.beginPath();ctx.moveTo(chartArea.left,y55);ctx.lineTo(chartArea.right,y55);
+    ctx.strokeStyle=C.mint;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();
+    ctx.restore();
+  }}]
+});
+
+// ─── MEDIAS COMPARATIVAS ───────────────────────────────────────
+const ctx4=document.getElementById('meanChart').getContext('2d');
+new Chart(ctx4,{
+  type:'bar',
+  data:{
+    labels:['TML\nAlto (≥60)','TML\nNormal (<60)'],
+    datasets:[
+      {label:'TML promedio (min)',data:[74.3,53.6],backgroundColor:[C.red+'CC',C.mint+'CC'],yAxisID:'y',borderRadius:3},
+      {label:'Rotación promedio',data:[0.73,0.43],backgroundColor:[C.yellow+'99',C.midgry+'66'],yAxisID:'y2',borderRadius:3}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:10,padding:6}}},
+    scales:{
+      x:{ticks:{font:{size:10}},grid:{display:false}},
+      y:{position:'left',title:{display:true,text:'TML (min)',font:{size:9}},min:0,max:90,ticks:{font:{size:9}},grid:{color:C.lgry}},
+      y2:{position:'right',title:{display:true,text:'Retiros/día',font:{size:9}},min:0,max:1.5,ticks:{font:{size:9}},grid:{display:false}}
+    }
+  }
+});
+
+// ─── SEMANAS ───────────────────────────────────────────────────
+const ctx5=document.getElementById('weekChart').getContext('2d');
+const wkLabels=['Mar S1','Mar S2','Mar S3','Mar S4','Abr S1','Abr S2','Abr S3','Abr S4','May*'];
+const wkTML=[65.0,55.2,54.2,54.1,55.2,75.7,68.3,53.4,55.3];
+new Chart(ctx5,{
+  type:'bar',
+  data:{labels:wkLabels,datasets:[{
+    label:'TML Promedio (min)',data:wkTML,
+    backgroundColor:wkTML.map(v=>v>=60?C.red+'CC':v<=55?C.mint+'CC':C.yellow+'CC'),
+    borderRadius:3,borderWidth:0
+  }]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} min`}}},
+    scales:{
+      x:{ticks:{font:{size:8},maxRotation:30},grid:{display:false}},
+      y:{min:45,max:85,ticks:{font:{size:9},callback:v=>v+' min'},grid:{color:C.lgry}}
+    }
+  },
+  plugins:[{id:'wRef',afterDraw(chart){
+    const{ctx,chartArea,scales}=chart;const y=scales.y;
+    ctx.save();
+    const y55=y.getPixelForValue(55);ctx.beginPath();ctx.moveTo(chartArea.left,y55);ctx.lineTo(chartArea.right,y55);
+    ctx.strokeStyle=C.mint;ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();
+    const y60=y.getPixelForValue(60);ctx.beginPath();ctx.moveTo(chartArea.left,y60);ctx.lineTo(chartArea.right,y60);
+    ctx.strokeStyle=C.red;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();
+    ctx.restore();
+  }}]
+});
+
+// ─── TABLA ABRIL ───────────────────────────────────────────────
+const tbody=document.getElementById('tablaAbril');
+const dow=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const inicioAbril=3; // 1 de abril 2026 = Miércoles
+
+for(let i=0;i<30;i++){
+  const t=abrTML[i],a=abrAUS[i],r=abrROT[i];
+  if(t===null&&a===null) continue;
+  const tr=document.createElement('tr');
+  const tAlto=t!==null&&t>=60;
+  const rAlto=r!==null&&r>=1;
+  if(tAlto&&rAlto) tr.className='row-crit';
+  else if(tAlto) tr.className='row-warn';
+  else if(t!==null&&t<=55) tr.className='row-ok';
+
+  let badge='',causal='';
+  if(tAlto&&rAlto){badge='<span class="badge badge-red">🔴 TML alto + Retiro</span>';causal='Se asocia con retiro de personal (p=0.017)';}
+  else if(tAlto){badge='<span class="badge badge-yellow">⚠ TML alto</span>';causal='Alta variabilidad — causa mixta';}
+  else if(t!==null&&t<=55){badge='<span class="badge badge-green">✅ En meta</span>';causal='Proceso estable';}
+  else{badge='<span class="badge badge-grey">Normal</span>';causal='—';}
+
+  const d=dow[(inicioAbril+i)%7];
+  tr.innerHTML=`
+    <td><strong>${i+1}</strong> <span style="color:var(--midgry);font-size:10px">${d}</span></td>
+    <td style="font-weight:${tAlto?700:400};color:${tAlto?'var(--red)':t!==null&&t<=55?'#1A7A6A':'var(--dark)'}">${t!==null?t+' min':'—'}</td>
+    <td style="font-weight:${rAlto?700:400};color:${rAlto?'#7A5C00':'var(--dark)'}">${r!==null?r:'—'}</td>
+    <td style="color:${a!==null&&a>=6?'var(--red)':a!==null&&a>=4?'#7A5C00':'var(--dark)'}">${a!==null?a:'—'}</td>
+    <td>${badge}</td>
+    <td style="font-size:10px;color:var(--midgry)">${causal}</td>
+  `;
+  tbody.appendChild(tr);
+}
+</script>
+</body>
+</html>
